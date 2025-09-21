@@ -1,0 +1,907 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Praveen's Library — Admin</title>
+
+  <!-- Font Awesome icons (CDN) -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    /* ===== Theme & Reset ===== */
+    :root{
+      --bg1:#7b021b; /* deep Harvard burgundy */
+      --bg2:#4e0011;
+      --glass: rgba(255,255,255,0.85);
+      --accent: #b71c1c;
+      --muted: #6b6b6b;
+      --success: #2e7d32;
+      --danger: #c62828;
+      --card-radius: 12px;
+      --transition: 250ms cubic-bezier(.2,.9,.3,1);
+    }
+   body {
+  position: relative;
+  background: url("https://www.voicesofruralindia.org/wp-content/uploads/2020/11/ylswjsy7stw-scaled.jpg") no-repeat center center/cover;
+  color: #111;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  align-items: stretch;
+  min-height: 100vh;
+  gap: 24px;
+  padding: 24px;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55); /* dark overlay */
+  z-index: -1;
+}
+
+
+    /* ===== App Shell ===== */
+    .app {
+      width:100%;
+      max-width:1200px;
+      margin:auto;
+      display:grid;
+      grid-template-columns: 260px 1fr;
+      gap:24px;
+      align-items:start;
+      min-height: calc(100vh - 48px);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      border-radius: var(--card-radius);
+      padding:18px;
+      color:white;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 6px 28px rgba(0,0,0,0.35);
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      position:relative;
+    }
+    .brand {
+      display:flex;gap:12px;align-items:center;
+    }
+    .brand .logo{
+      width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#fff6,#fff3);
+      display:flex;align-items:center;justify-content:center;color:var(--bg1);font-weight:700;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .brand h2{margin:0;font-size:16px;}
+    .brand p{margin:0;font-size:12px;color:rgba(255,255,255,0.85)}
+
+    nav { display:flex;flex-direction:column;gap:6px;margin-top:6px; }
+    .nav-item{
+      display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;color:rgba(255,255,255,0.95);
+      cursor:pointer;transition:background var(--transition), transform .12s;
+      font-weight:600;
+    }
+    .nav-item:hover{background:rgba(255,255,255,0.03);transform:translateY(-2px)}
+    .nav-item.active{background:linear-gradient(90deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06));box-shadow:inset 0 0 0 1px rgba(255,255,255,0.02)}
+    .nav-item i{width:20px;text-align:center}
+
+    .sidebar-footer{margin-top:auto;font-size:12px;color:rgba(255,255,255,0.8);display:flex;justify-content:space-between;align-items:center}
+    .sidebar-footer button{background:transparent;border:1px solid rgba(255,255,255,0.06);color:white;padding:6px 10px;border-radius:8px;cursor:pointer}
+
+    /* Main Content */
+    .main {
+      background: var(--glass);
+      border-radius: var(--card-radius);
+      padding:20px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+      min-height: calc(90vh - 96px);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+
+    /* Top bar */
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .topbar .search {
+      flex:1;display:flex;gap:10px;align-items:center;
+      background:rgba(0,0,0,0.03);padding:10px;border-radius:10px;
+    }
+    .topbar input{
+      border:none;background:transparent;outline:none;font-size:14px;width:100%;
+    }
+    .topbar .actions{display:flex;gap:8px;align-items:center}
+    .btn{
+      background:var(--accent);color:white;padding:10px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:600;
+      box-shadow:0 6px 18px rgba(0,0,0,0.12);
+      transition:transform .12s var(--transition), opacity var(--transition);
+      display:inline-flex;gap:8px;align-items:center;
+    }
+    .btn:hover{transform:translateY(-3px)}
+    .btn.ghost{background:transparent;color:var(--accent);border:1px dashed rgba(0,0,0,0.05)}
+    .badge{display:inline-flex;gap:8px;align-items:center;background:rgba(0,0,0,0.04);padding:6px 10px;border-radius:999px;font-weight:700}
+
+    /* Content Sections */
+    .content {flex:1;overflow:auto;padding-right:6px;}
+    .grid {display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+    .card {
+      background:linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9));
+      padding:16px;border-radius:12px;border:1px solid rgba(0,0,0,0.04);
+      box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;flex-direction:column;gap:8px;
+      transition:transform var(--transition), box-shadow var(--transition);
+    }
+    .card:hover{transform:translateY(-6px)}
+    .card h3{margin:0;font-size:14px}
+    .kpi {font-size:24px;font-weight:800;color:var(--accent)}
+
+    /* Book list table */
+    .table {width:100%;border-collapse:collapse;margin-top:8px}
+    .table th, .table td{padding:10px 8px;text-align:left;border-bottom:1px solid rgba(0,0,0,0.04)}
+    .table th{font-size:13px;color:var(--muted)}
+    .table tr:hover td{background:rgba(0,0,0,0.02)}
+
+    /* Book card small */
+    .small-card{display:flex;gap:12px;align-items:center}
+    .cover{
+      width:56px;height:72px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#a60000);
+      color:white;display:flex;align-items:center;justify-content:center;font-weight:800;
+      font-size:18px;box-shadow:0 6px 18px rgba(0,0,0,0.12)
+    }
+    .meta small{color:var(--muted)}
+
+    /* Suggestions dropdown */
+    .suggestions {
+      position:absolute;z-index:2000;left:24px;right:24px;top:18px;display:none;
+      background:white;border-radius:10px;padding:8px;border:1px solid rgba(0,0,0,0.06);
+      box-shadow:0 8px 24px rgba(0,0,0,0.12);
+      max-height:320px;overflow:auto;
+    }
+    .suggest-item{padding:8px;border-radius:8px;display:flex;gap:10px;align-items:center;cursor:pointer}
+    .suggest-item:hover{background:rgba(0,0,0,0.03)}
+
+    /* Borrowed badge */
+    .status{padding:6px 10px;border-radius:999px;font-weight:700;font-size:12px}
+    .status.available{background:rgba(46,125,50,0.12);color:var(--success)}
+    .status.borrowed{background:rgba(198,40,40,0.12);color:var(--danger)}
+
+    /* Modals */
+    .modal-backdrop{
+      position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:4000;
+    }
+    .modal{
+      width:100%;max-width:720px;background:white;padding:18px;border-radius:12px;box-shadow:0 12px 34px rgba(0,0,0,0.3);
+      transform:translateY(12px);opacity:0;transition:all .18s ease;
+    }
+    .modal.show{transform:none;opacity:1}
+
+    /* Responsive */
+    @media (max-width:980px){
+      .app{grid-template-columns:1fr; padding-bottom:40px}
+      .sidebar{order:2}
+      .main{order:1}
+      .grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:640px){
+      .grid{grid-template-columns:1fr}
+      .topbar{flex-direction:column;gap:12px;align-items:stretch}
+      .suggestions{left:12px;right:12px}
+    }
+
+    /* Tiny helpers */
+    .muted{color:var(--muted)}
+    .tiny{font-size:12px}
+    .right{text-align:right}
+    .flex{display:flex;align-items:center;gap:8px}
+    .pill{padding:6px 10px;border-radius:999px;background:rgba(0,0,0,0.03)}
+    .no-data{padding:20px;text-align:center;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" aria-label="Sidebar">
+      <div class="brand">
+        <div class="logo">P</div>
+        <div>
+          <h2>Praveen's Library</h2>
+          <p class="tiny">Admin Dashboard</p>
+        </div>
+      </div>
+
+      <nav id="nav">
+        <div class="nav-item active" data-page="dashboard"><i class="fa-solid fa-gauge"></i> Dashboard</div>
+        <div class="nav-item" data-page="books"><i class="fa-solid fa-book"></i> Books</div>
+        <div class="nav-item" data-page="borrowed"><i class="fa-solid fa-hand-holding"></i> Borrowed</div>
+        <div class="nav-item" data-page="add"><i class="fa-solid fa-circle-plus"></i> Add Book</div>
+        <div class="nav-item" data-page="users"><i class="fa-solid fa-users"></i> Users</div>
+        <div style="height:10px"></div>
+        <div class="nav-item" id="exportBtn"><i class="fa-solid fa-file-export"></i> Export JSON</div>
+        <div class="nav-item" id="importBtn"><i class="fa-solid fa-file-import"></i> Import JSON</div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div>
+          <div class="tiny">Logged in as</div>
+          <div style="font-weight:700">Admin</div>
+        </div>
+        <div>
+          <button id="collapseBtn" title="Collapse sidebar"><i class="fa-solid fa-angle-left"></i></button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main" role="main">
+      <div class="topbar">
+        <div class="search" style="position:relative">
+          <i class="fa-solid fa-magnifying-glass" style="color:var(--muted)"></i>
+          <input id="globalSearch" placeholder="Search books, authors, borrowers..." aria-label="Search">
+          <div class="suggestions" id="suggestions" role="listbox"></div>
+        </div>
+        <div class="actions">
+          <div class="pill muted tiny"><i class="fa-solid fa-circle"></i> Online</div>
+          <button class="btn" id="addQuick"><i class="fa-solid fa-plus"></i> Quick Add</button>
+        </div>
+      </div>
+
+      <section class="content" id="content">
+        <!-- dynamic content injected here -->
+        <div id="page-dashboard" class="page">
+          <div class="grid">
+            <div class="card">
+              <h3>Total Books</h3>
+              <div class="kpi" id="kpi-total">0</div>
+              <div class="muted tiny">All catalogued books</div>
+            </div>
+            <div class="card">
+              <h3>Borrowed</h3>
+              <div class="kpi" id="kpi-borrowed">0</div>
+              <div class="muted tiny">Books currently lent out</div>
+            </div>
+            <div class="card">
+              <h3>Available</h3>
+              <div class="kpi" id="kpi-available">0</div>
+              <div class="muted tiny">Books available for lending</div>
+            </div>
+          </div>
+
+          <div style="margin-top:18px">
+            <div class="card">
+              <h3>Recent Activity</h3>
+              <div id="activityList" style="margin-top:10px"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="page-books" class="page" style="display:none">
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+              <div>
+                <h3 style="margin-bottom:6px">All Books</h3>
+                <div class="muted tiny">Manage your collection</div>
+              </div>
+              <div class="flex">
+                <select id="filterSort" class="tiny">
+                  <option value="alpha">Sort: A → Z</option>
+                  <option value="alpha-desc">Sort: Z → A</option>
+                  <option value="newest">Sort: Newest</option>
+                </select>
+                <button class="btn ghost" id="bulkDelete">Delete Selected</button>
+              </div>
+            </div>
+
+            <div style="margin-top:14px;overflow:auto">
+              <table class="table" id="bookTable" aria-live="polite">
+                <thead>
+                  <tr>
+                    <th style="width:36px"><input type="checkbox" id="selectAll"></th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Year</th>
+                    <th>Status</th>
+                    <th class="right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="bookTbody"></tbody>
+              </table>
+              <div id="booksEmpty" class="no-data" style="display:none">No books found. Add your first book.</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="page-borrowed" class="page" style="display:none">
+          <div class="card">
+            <h3>Borrowed Books</h3>
+            <div class="muted tiny">Currently lent out — return from here</div>
+            <div style="margin-top:12px">
+              <table class="table">
+                <thead>
+                  <tr><th>Title</th><th>Borrower</th><th>Date</th><th class="right">Action</th></tr>
+                </thead>
+                <tbody id="borrowedTbody"></tbody>
+              </table>
+              <div id="borrowedEmpty" class="no-data" style="display:none">No borrowed books right now.</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="page-add" class="page" style="display:none">
+          <div class="card">
+            <h3>Add New Book</h3>
+            <div style="display:grid;grid-template-columns:1fr 220px;gap:12px;margin-top:10px">
+              <div>
+                <label class="tiny">Title</label>
+                <input id="addTitle" placeholder="E.g. Introduction to Algorithms">
+                <label class="tiny" style="margin-top:8px">Author</label>
+                <input id="addAuthor" placeholder="Author name">
+                <label class="tiny" style="margin-top:8px">Year</label>
+                <input id="addYear" placeholder="YYYY">
+                <label class="tiny" style="margin-top:8px">Description</label>
+                <textarea id="addDesc" rows="4" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)"></textarea>
+                <div style="margin-top:12px;display:flex;gap:8px">
+                  <button class="btn" id="saveBook"><i class="fa-solid fa-floppy-disk"></i> Save Book</button>
+                  <button class="btn ghost" id="clearAdd">Clear</button>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+                  <div class="cover" id="previewCover" style="width:160px;height:220px;font-size:34px"></div>
+                  <div class="muted tiny">Cover preview — initials based</div>
+                  <div style="font-size:12px;color:var(--muted);text-align:center">Optional: Use "Quick Add" in top bar to instantly add minimal data.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="page-users" class="page" style="display:none">
+          <div class="card">
+            <h3>Users</h3>
+            <div class="muted tiny">Basic users list (for demo)</div>
+            <div style="margin-top:12px">
+              <table class="table">
+                <thead><tr><th>User</th><th>Active Loans</th><th class="right">Action</th></tr></thead>
+                <tbody id="usersTbody"></tbody>
+              </table>
+              <div id="usersEmpty" class="no-data" style="display:none">No users yet.</div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal backdrop -->
+  <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+    <div class="modal" id="modal">
+      <!-- dynamic -->
+    </div>
+  </div>
+
+  <!-- Hidden file input for import -->
+  <input type="file" id="importFile" accept="application/json" style="display:none">
+
+  <script>
+    /***********************
+     * Library Admin App
+     * Single-file SPA
+     ***********************/
+    // LocalStorage keys
+    const LS_BOOKS = "harvard_books_v1";
+    const LS_LEND = "harvard_lend_v1";
+    const LS_USERS = "harvard_users_v1";
+    const LS_ACTIVITY = "harvard_activity_v1";
+
+    // App state
+    const state = {
+      books: [],              // {id,title,author,year,desc,createdAt}
+      lend: {},               // bookId -> {user, date}
+      users: [],              // {id,name}
+      activity: []            // [{time, text}]
+    };
+
+    // Utilities
+    const uid = (n=8) => Math.random().toString(36).slice(2,2+n);
+    const todayISO = () => new Date().toISOString();
+    const $ = (sel) => document.querySelector(sel);
+    const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+    // -- init sample if empty
+    function seedIfEmpty(){
+      if (localStorage.getItem(LS_BOOKS)) return;
+      const sample = [
+        {id:uid(), title:"Python Basics", author:"John Doe", year:"2019", desc:"Intro to Python", createdAt:todayISO()},
+        {id:uid(), title:"Data Science Handbook", author:"Jane Smith", year:"2020", desc:"Practical DS", createdAt:todayISO()},
+        {id:uid(), title:"Machine Learning", author:"Andrew Ng", year:"2016", desc:"ML textbook", createdAt:todayISO()},
+        {id:uid(), title:"Artificial Intelligence", author:"Stuart Russell", year:"2015", desc:"AI concepts", createdAt:todayISO()}
+      ];
+      localStorage.setItem(LS_BOOKS, JSON.stringify(sample));
+      localStorage.setItem(LS_LEND, JSON.stringify({}));
+      localStorage.setItem(LS_USERS, JSON.stringify([]));
+      localStorage.setItem(LS_ACTIVITY, JSON.stringify([]));
+    }
+
+    // -- load/save
+    function load(){
+      state.books = JSON.parse(localStorage.getItem(LS_BOOKS) || "[]");
+      state.lend = JSON.parse(localStorage.getItem(LS_LEND) || "{}");
+      state.users = JSON.parse(localStorage.getItem(LS_USERS) || "[]");
+      state.activity = JSON.parse(localStorage.getItem(LS_ACTIVITY) || "[]");
+    }
+    function save(){
+      localStorage.setItem(LS_BOOKS, JSON.stringify(state.books));
+      localStorage.setItem(LS_LEND, JSON.stringify(state.lend));
+      localStorage.setItem(LS_USERS, JSON.stringify(state.users));
+      localStorage.setItem(LS_ACTIVITY, JSON.stringify(state.activity));
+    }
+    function act(text){
+      state.activity.unshift({time:todayISO(), text});
+      if (state.activity.length>80) state.activity.pop();
+      save();
+      renderActivity();
+    }
+
+    // -- initial
+    seedIfEmpty();
+    load();
+
+    // DOM references
+    const navItems = $$("#nav .nav-item");
+    const pages = $$(".page");
+    const suggestionsBox = $("#suggestions");
+    const globalSearch = $("#globalSearch");
+
+    // --- Navigation
+    navItems.forEach(item=>{
+      item.addEventListener("click", ()=>{
+        navItems.forEach(i=>i.classList.remove("active"));
+        item.classList.add("active");
+        const page = item.dataset.page;
+        showPage(page);
+      });
+    });
+
+    function showPage(name){
+      pages.forEach(p=>p.style.display="none");
+      $("#page-"+name).style.display = "block";
+      // scroll top
+      document.getElementById("content").scrollTop = 0;
+      if (name === "dashboard") renderDashboard();
+      if (name === "books") renderBooksTable();
+      if (name === "borrowed") renderBorrowed();
+      if (name === "add") fillAddPreview();
+      if (name === "users") renderUsers();
+    }
+
+    // --- Dashboard render
+    function renderDashboard(){
+      const total = state.books.length;
+      const borrowedCount = Object.keys(state.lend).length;
+      const available = total - borrowedCount;
+      $("#kpi-total").innerText = total;
+      $("#kpi-borrowed").innerText = borrowedCount;
+      $("#kpi-available").innerText = available;
+      renderActivity();
+    }
+    function renderActivity(){
+      const el = $("#activityList");
+      el.innerHTML = "";
+      if (state.activity.length===0){ el.innerHTML = "<div class='no-data'>No recent activity</div>"; return;}
+      state.activity.slice(0,8).forEach(it=>{
+        const t = new Date(it.time).toLocaleString();
+        const div = document.createElement("div");
+        div.style.padding="8px 0";div.style.borderBottom="1px dashed rgba(0,0,0,0.04)";
+        div.innerHTML = `<div style="font-weight:700">${it.text}</div><div class="tiny muted">${t}</div>`;
+        el.appendChild(div);
+      });
+    }
+
+    // --- Books Table render
+    function renderBooksTable(){
+      const tbody = $("#bookTbody");
+      tbody.innerHTML = "";
+      const books = state.books.slice(); // copy
+      const sort = $("#filterSort").value;
+      if (sort === "alpha") books.sort((a,b)=>a.title.localeCompare(b.title));
+      if (sort === "alpha-desc") books.sort((a,b)=>b.title.localeCompare(a.title));
+      if (sort === "newest") books.sort((a,b)=> new Date(b.createdAt)-new Date(a.createdAt));
+
+      if (books.length===0){ $("#booksEmpty").style.display="block"; return; } else $("#booksEmpty").style.display="none";
+
+      books.forEach(book=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><input type="checkbox" class="row-check" data-id="${book.id}"></td>
+          <td>
+            <div class="small-card">
+              <div class="cover" style="background:${coverGradient(book.title)}">${coverInitials(book.title)}</div>
+              <div>
+                <div style="font-weight:700">${escapeHtml(book.title)}</div>
+                <div class="muted tiny">${escapeHtml(book.desc || "")}</div>
+              </div>
+            </div>
+          </td>
+          <td>${escapeHtml(book.author||"—")}</td>
+          <td>${escapeHtml(book.year||"—")}</td>
+          <td><span class="status ${state.lend[book.id] ? 'borrowed' : 'available'}">${state.lend[book.id] ? 'Borrowed' : 'Available'}</span></td>
+          <td class="right">
+            <div style="display:inline-flex;gap:8px;align-items:center;justify-content:flex-end">
+              <button class="btn ghost" data-action="lend" data-id="${book.id}" title="Lend"><i class="fa-solid fa-hand-holding"></i></button>
+              <button class="btn ghost" data-action="edit" data-id="${book.id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
+              <button class="btn ghost" data-action="del" data-id="${book.id}" title="Delete"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // attach row actions
+      $$("#bookTbody [data-action]").forEach(btn=>{
+        btn.addEventListener("click", (e)=>{
+          const id = btn.dataset.id;
+          const act = btn.dataset.action;
+          if (act==="lend") openLendModal(id);
+          if (act==="edit") openEditModal(id);
+          if (act==="del") confirmDelete([id]);
+        })
+      });
+    }
+
+    // --- Borrowed render
+    function renderBorrowed(){
+      const tbody = $("#borrowedTbody");
+      tbody.innerHTML = "";
+      const lentIds = Object.keys(state.lend);
+      if (lentIds.length===0){ $("#borrowedEmpty").style.display="block"; return;} else $("#borrowedEmpty").style.display="none";
+
+      lentIds.forEach(id=>{
+        const info = state.lend[id];
+        const book = state.books.find(b=>b.id===id);
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${escapeHtml(book.title)}</td>
+          <td>${escapeHtml(info.user)}</td>
+          <td>${new Date(info.date).toLocaleString()}</td>
+          <td class="right"><button class="btn" data-id="${id}" data-action="return"><i class="fa-solid fa-rotate-left"></i> Return</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      $$("#borrowedTbody [data-action='return']").forEach(b=>{
+        b.addEventListener("click", ()=> {
+          const id = b.dataset.id;
+          confirmReturn(id);
+        })
+      })
+    }
+
+    // --- Users render
+    function renderUsers(){
+      const tbody = $("#usersTbody");
+      tbody.innerHTML = "";
+      if (state.users.length===0){ $("#usersEmpty").style.display="block"; return;} else $("#usersEmpty").style.display="none";
+
+      state.users.forEach(u=>{
+        const loans = Object.values(state.lend).filter(l=>l.user===u.name).length;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${escapeHtml(u.name)}</td><td>${loans}</td><td class="right"><button class="btn ghost" data-id="${u.id}" data-action="deluser"><i class="fa-solid fa-trash"></i></button></td>`;
+        tbody.appendChild(tr);
+      });
+      $$("#usersTbody [data-action='deluser']").forEach(btn=>btn.addEventListener("click", ()=>{
+        const id = btn.dataset.id;
+        confirm("Delete user? This won't remove their loans.") && (state.users = state.users.filter(u=>u.id!==id), save(), renderUsers());
+      }))
+    }
+
+    // ===== Actions: Add / Quick Add / Save =====
+    $("#saveBook").addEventListener("click", ()=>{
+      const title = $("#addTitle").value.trim();
+      const author = $("#addAuthor").value.trim();
+      const year = $("#addYear").value.trim();
+      const desc = $("#addDesc").value.trim();
+      if (!title) return alert("Please enter a title");
+      const book = {id:uid(10), title, author, year, desc, createdAt:todayISO()};
+      state.books.unshift(book);
+      save();
+      act(`Added book "${title}"`);
+      alert("Book saved");
+      // navigate to books
+      $$("#nav .nav-item").forEach(i=>i.classList.remove("active"));
+      document.querySelector('#nav .nav-item[data-page="books"]').classList.add("active");
+      showPage("books");
+    });
+
+    $("#clearAdd").addEventListener("click", ()=>{
+      $("#addTitle").value = $("#addAuthor").value = $("#addYear").value = $("#addDesc").value = "";
+      fillAddPreview();
+    });
+
+    // Quick Add (topbar)
+    $("#addQuick").addEventListener("click", ()=>{
+      const val = prompt("Quick add - enter title (Format: Title | Author | Year)","New Book | Unknown | 2024");
+      if (!val) return;
+      const parts = val.split("|").map(s=>s.trim());
+      const title = parts[0] || "Untitled";
+      const author = parts[1] || "Unknown";
+      const year = parts[2] || "";
+      const book = {id:uid(10), title, author, year, desc:"", createdAt:todayISO()};
+      state.books.unshift(book);
+      save();
+      act(`Quick-added "${title}"`);
+      alert("Quick added");
+      renderBooksTable();
+    });
+
+    // Quick preview cover in Add page
+    function fillAddPreview(){
+      const t = $("#addTitle").value.trim() || "Title";
+      $("#previewCover").innerText = coverInitials(t);
+      $("#previewCover").style.background = coverGradient(t);
+    }
+    $("#addTitle").addEventListener("input", fillAddPreview);
+
+    // --- Lend flow
+    function openLendModal(bookId){
+      const book = state.books.find(b=>b.id===bookId);
+      if (!book) return alert("Book not found");
+      const html = `
+        <h3>Lend Book</h3>
+        <div style="margin-top:8px"><strong>${escapeHtml(book.title)}</strong> — ${escapeHtml(book.author||"")}</div>
+        <div style="margin-top:12px"><label class="tiny">Borrower Name</label><input id="lendUser" placeholder="Student / Staff name"></div>
+        <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+          <button class="btn ghost" id="lendCancel">Cancel</button>
+          <button class="btn" id="lendConfirm"><i class="fa-solid fa-hand-holding"></i> Lend</button>
+        </div>
+      `;
+      showModal(html);
+      $("#lendCancel").addEventListener("click", closeModal);
+      $("#lendConfirm").addEventListener("click", ()=>{
+        const user = $("#lendUser").value.trim();
+        if (!user) return alert("Enter borrower name");
+        state.lend[bookId] = {user, date:todayISO()};
+        // ensure user exists
+        if (!state.users.find(u=>u.name===user)) state.users.push({id:uid(6), name:user});
+        save();
+        act(`Lent "${book.title}" to ${user}`);
+        closeModal();
+        renderBooksTable();
+        renderBorrowed();
+      })
+    }
+
+    // --- Return flow
+    function confirmReturn(bookId){
+      const book = state.books.find(b=>b.id===bookId);
+      showModal(`<h3>Return Book</h3><div style="margin-top:12px">Return "<strong>${escapeHtml(book.title)}</strong>"?</div><div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end"><button class="btn ghost" id="retCancel">Cancel</button><button class="btn" id="retConfirm">Return</button></div>`);
+      $("#retCancel").addEventListener("click", closeModal);
+      $("#retConfirm").addEventListener("click", ()=>{
+        delete state.lend[bookId];
+        save();
+        act(`Returned "${book.title}"`);
+        closeModal();
+        renderBorrowed();
+        renderBooksTable();
+      })
+    }
+
+    // --- Delete flow (single or multiple)
+    $("#bulkDelete").addEventListener("click", ()=>{
+      const sel = Array.from($$(".row-check:checked")).map(ch=>ch.dataset.id);
+      if (sel.length===0) return alert("Select rows first");
+      confirmDelete(sel);
+    });
+    function confirmDelete(ids){
+      const titles = ids.map(id=> (state.books.find(b=>b.id===id)||{}).title || "Unknown").join(", ");
+      showModal(`<h3>Delete Book(s)</h3><div style="margin-top:12px">Delete: <strong>${escapeHtml(titles)}</strong> ? This action cannot be undone.</div><div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end"><button class="btn ghost" id="delCancel">Cancel</button><button class="btn" id="delConfirm">Delete</button></div>`);
+      $("#delCancel").addEventListener("click", closeModal);
+      $("#delConfirm").addEventListener("click", ()=>{
+        state.books = state.books.filter(b=>!ids.includes(b.id));
+        // remove lends for those books
+        ids.forEach(id=> delete state.lend[id]);
+        save();
+        act(`Deleted ${ids.length} book(s)`);
+        closeModal();
+        renderBooksTable();
+        renderBorrowed();
+      });
+    }
+
+    // --- Edit book
+    function openEditModal(bookId){
+      const book = state.books.find(b=>b.id===bookId);
+      if (!book) return;
+      const html = `
+        <h3>Edit Book</h3>
+        <div style="display:grid;gap:8px;margin-top:8px">
+          <label class="tiny">Title</label><input id="editTitle" value="${escapeHtml(book.title)}">
+          <label class="tiny">Author</label><input id="editAuthor" value="${escapeHtml(book.author||'')}">
+          <label class="tiny">Year</label><input id="editYear" value="${escapeHtml(book.year||'')}">
+          <label class="tiny">Description</label><textarea id="editDesc" rows="4">${escapeHtml(book.desc||'')}</textarea>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+          <button class="btn ghost" id="editCancel">Cancel</button>
+          <button class="btn" id="editSave"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+        </div>
+      `;
+      showModal(html);
+      $("#editCancel").addEventListener("click", closeModal);
+      $("#editSave").addEventListener("click", ()=>{
+        book.title = $("#editTitle").value.trim() || book.title;
+        book.author = $("#editAuthor").value.trim();
+        book.year = $("#editYear").value.trim();
+        book.desc = $("#editDesc").value.trim();
+        save();
+        act(`Edited "${book.title}"`);
+        closeModal();
+        renderBooksTable();
+      });
+    }
+
+    // --- Export / Import
+    $("#exportBtn").addEventListener("click", ()=>{
+      const data = {books:state.books, lend:state.lend, users:state.users, activity:state.activity};
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = "harvard_library_export.json"; a.click();
+      URL.revokeObjectURL(url);
+    });
+    $("#importBtn").addEventListener("click", ()=>$("#importFile").click());
+    $("#importFile").addEventListener("change", (e)=>{
+      const f = e.target.files[0]; if (!f) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const obj = JSON.parse(reader.result);
+          if (obj.books) state.books = obj.books;
+          if (obj.lend) state.lend = obj.lend;
+          if (obj.users) state.users = obj.users;
+          if (obj.activity) state.activity = obj.activity;
+          save(); load(); renderAll();
+          alert("Import successful");
+        } catch(err){ alert("Invalid JSON file") }
+      };
+      reader.readAsText(f);
+      e.target.value = "";
+    });
+
+    // --- Search & Suggestions
+    globalSearch.addEventListener("input", onSearch);
+    globalSearch.addEventListener("keydown", (e)=>{
+      const items = Array.from(document.querySelectorAll(".suggest-item"));
+      const active = document.querySelector(".suggest-item.active");
+      if (e.key === "ArrowDown") { e.preventDefault(); if (!active) items[0] && items[0].classList.add("active"); else { const i=items.indexOf(active); active.classList.remove("active"); items[(i+1)%items.length].classList.add("active"); } }
+      if (e.key === "ArrowUp") { e.preventDefault(); if (!active) items[items.length-1] && items[items.length-1].classList.add("active"); else { const i=items.indexOf(active); active.classList.remove("active"); items[(i-1+items.length)%items.length].classList.add("active"); } }
+      if (e.key === "Enter") { e.preventDefault(); if (active) { active.click(); } }
+    });
+    document.addEventListener("click", (e)=>{
+      if (!e.target.closest(".search")) suggestionsBox.style.display = "none";
+    });
+
+    function onSearch(){
+      const q = globalSearch.value.trim().toLowerCase();
+      if (!q){ suggestionsBox.style.display="none"; return; }
+      const matches = state.books.filter(b => b.title.toLowerCase().includes(q) || (b.author||"").toLowerCase().includes(q));
+      suggestionsBox.innerHTML = "";
+      if (matches.length===0){ suggestionsBox.style.display="none"; return; }
+      matches.slice(0,10).forEach(b=>{
+        const div = document.createElement("div");
+        div.className = "suggest-item";
+        div.innerHTML = `<div class="cover" style="width:44px;height:56px;font-size:14px;margin-right:8px;background:${coverGradient(b.title)}">${coverInitials(b.title)}</div><div><div style="font-weight:700">${highlight(b.title,q)}</div><div class="tiny muted">${highlight(b.author||"",q)}</div></div>`;
+        div.addEventListener("click", ()=>{
+          // open book detail modal
+          showBookDetail(b.id);
+          suggestionsBox.style.display="none";
+        });
+        suggestionsBox.appendChild(div);
+      });
+      suggestionsBox.style.display="block";
+    }
+
+    function showBookDetail(bookId){
+      const b = state.books.find(x=>x.id===bookId);
+      const isLent = !!state.lend[b.id];
+      const lendInfo = isLent ? state.lend[b.id] : null;
+      const html = `<h3>${escapeHtml(b.title)}</h3>
+        <div class="small-card" style="margin-top:8px">
+          <div class="cover" style="width:84px;height:110px;font-size:26px;background:${coverGradient(b.title)}">${coverInitials(b.title)}</div>
+          <div style="flex:1">
+            <div style="font-weight:700">${escapeHtml(b.author||"—")}</div>
+            <div class="muted tiny">${escapeHtml(b.year||"")}</div>
+            <div style="margin-top:8px">${escapeHtml(b.desc||"")}</div>
+            <div style="margin-top:10px" class="flex">
+              <div class="status ${isLent ? 'borrowed' : 'available'}">${isLent ? 'Borrowed' : 'Available'}</div>
+              ${isLent ? `<div class="muted tiny"> — ${escapeHtml(lendInfo.user)} since ${new Date(lendInfo.date).toLocaleDateString()}</div>` : ''}
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:12px;display:flex;justify-content:flex-end;gap:8px">
+          ${!isLent ? `<button class="btn" id="detailLend"><i class="fa-solid fa-hand-holding"></i> Lend</button>` : `<button class="btn" id="detailReturn"><i class="fa-solid fa-rotate-left"></i> Return</button>`}
+          <button class="btn ghost" id="detailEdit">Edit</button>
+          <button class="btn ghost" id="detailClose">Close</button>
+        </div>
+      `;
+      showModal(html);
+      $("#detailClose").onclick = closeModal;
+      $("#detailEdit").onclick = ()=>{ closeModal(); openEditModal(bookId); };
+      if ($("#detailLend")) $("#detailLend").onclick = ()=>{ closeModal(); openLendModal(bookId); };
+      if ($("#detailReturn")) $("#detailReturn").onclick = ()=>{ closeModal(); confirmReturn(bookId); };
+    }
+
+    // --- Modal helpers
+    const modalBackdrop = $("#modalBackdrop");
+    const modal = $("#modal");
+    function showModal(html){
+      modal.innerHTML = html;
+      modalBackdrop.style.display = "flex";
+      setTimeout(()=>modal.classList.add("show"),20);
+    }
+    function closeModal(){ modal.classList.remove("show"); setTimeout(()=> modalBackdrop.style.display="none",180); }
+
+    // --- Helpers: UI utilities
+    function coverInitials(title){
+      return title.split(" ").slice(0,2).map(s=>s[0]).join("").toUpperCase();
+    }
+    function coverGradient(title){
+      // deterministic gradient from title
+      const v = title.split("").reduce((s,c)=> s + c.charCodeAt(0), 0);
+      const hue = (v % 360);
+      return `linear-gradient(135deg, hsl(${hue} 80% 45%), hsl(${(hue+30)%360} 80% 30%))`;
+    }
+    function escapeHtml(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+    function highlight(text,q){
+      if (!q) return escapeHtml(text);
+      const re = new RegExp(`(${escapeRegExp(q)})`,'ig');
+      return escapeHtml(text).replace(re, `<mark style="background:linear-gradient(90deg,#ffef9b,#ffd59b);padding:0 4px;border-radius:4px">$1</mark>`);
+    }
+    function escapeRegExp(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+    // --- Utilities for bulk select
+    $("#selectAll").addEventListener("change", (e)=>{
+      const checked = e.target.checked;
+      $$(".row-check").forEach(ch=>ch.checked = checked);
+    });
+
+    // Bulk delete keyboard
+    document.addEventListener("keydown", (e)=>{
+      if (e.key==="Delete" && confirm("Delete selected?")) {
+        const sel = Array.from($$(".row-check:checked")).map(ch=>ch.dataset.id);
+        if (sel.length) confirmDelete(sel);
+      }
+    });
+
+    // --- Confirm helpers
+    function confirmDeleteSelected(){ const sel = Array.from($$(".row-check:checked")).map(ch=>ch.dataset.id); if (!sel.length) return alert("No selection"); confirmDelete(sel); }
+
+    // --- Render all
+    function renderAll(){
+      renderDashboard(); renderBooksTable(); renderBorrowed(); renderUsers();
+    }
+    renderAll();
+
+    // --- Sidebar collapse
+    $("#collapseBtn").addEventListener("click", ()=>{
+      const sb = document.querySelector(".sidebar");
+      if (sb.style.width && sb.style.width!=="260px"){ sb.style.width="260px"; $("#collapseBtn i").classList.replace("fa-angle-right","fa-angle-left"); }
+      else { sb.style.width="72px"; $("#collapseBtn i").classList.replace("fa-angle-left","fa-angle-right"); }
+    });
+
+    // --- Select row actions (delegated) for delete via dataset (example)
+    // handled above in renderBooksTable()
+
+    // --- Small utility: escape html for textarea etc
+    // (already provided)
+
+    // --- Expose a few debug actions globally for convenience
+    window.appState = state;
+    window.renderAll = renderAll;
+
+    // End of script
+  </script>
+</body>
+</html>
